@@ -1,0 +1,51 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+div.MuiTextField-root {
+  border-color: #c1d9e5;
+}
+
+.MuiInputBase-input {
+  height: 50px;
+  box-sizing: border-box;
+}
+
+.MuiButtonBase-root.MuiButton-root,
+.MuiButtonBase-root.MuiIconButton-root {
+  &:hover {
+    opacity: 0.8;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  &:active {
+    box-shadow: none;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.swap_icon-container {
+  transform: rotate(90deg);
+  padding: 8px 0;
+  cursor: pointer;
+
+  @media (min-width: 600px) {
+    transform: rotate(180deg);
+    padding: 0 19px;
+  }
+}
+
+.MuiTypography-root.error_message {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+  color: #e03f3f;
+}

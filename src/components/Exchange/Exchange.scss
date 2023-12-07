@@ -1,0 +1,47 @@
+.MuiGrid-root.exchange_container {
+  flex-direction: column;
+  justify-content: stretch;
+  margin-top: 15px;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    margin-top: 10px;
+  }
+}
+
+.MuiInputLabel-root.address_label {
+  text-align: start;
+  margin-bottom: 5px;
+  color: #282828;
+}
+
+#address {
+  box-sizing: border-box;
+  height: 50px;
+  padding: 14px 16px;
+  border: 1px solid #e3ebef;
+  border-radius: 5px;
+  color: #282828;
+  background-color: #f6f7f8;
+  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.exchange_button-container {
+  position: relative;
+}
+
+.MuiButton-root.exchange_button {
+  height: 50px;
+  margin-top: 0;
+  margin-bottom: 8px;
+  background-color: #11b3fe;
+  box-shadow: none;
+
+  &:hover {
+    background-color: #0095e0;
+  }
+
+  @media (min-width: 600px) {
+    margin-top: 27px;
+  }
+}

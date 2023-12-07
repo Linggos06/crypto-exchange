@@ -1,0 +1,152 @@
+$input_background-color: #f6f7f8;
+$input_border-color: #e3ebef;
+$input_border-color2: #c1d9e5;
+$text_color: #282828;
+$height: 50px;
+
+.MuiStack-root.currency_bar {
+  height: $height;
+  width: auto;
+
+  & > .MuiInputBase-root {
+    max-width: 290px;
+    width: 100%;
+  }
+}
+
+#search_coin-button {
+  position: relative;
+  height: $height;
+  border-left: none;
+  &:hover {
+    background-color: $input_background-color;
+    border-color: $input_border-color;
+  }
+  &:disabled {
+    background-color: $input_background-color;
+    border-color: $input_background-color;
+  }
+
+  &::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 30px;
+    background-color: $input_border-color;
+  }
+
+  & .MuiButton-startIcon {
+    margin-right: 12px;
+  }
+
+  & .MuiButton-endIcon {
+    position: absolute;
+    right: 8px;
+  }
+}
+
+.MuiAutocomplete-root {
+  position: absolute;
+  top: 0;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: $height;
+  background-color: $input_background-color;
+  border-radius: 5px;
+  border-color: $input_border-color2;
+
+  & .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: $input_border-color2;
+  }
+
+  & .MuiOutlinedInput-notchedOutline {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-color: $input_border-color2;
+  }
+
+  &:hover {
+    background-color: #ffffff;
+  }
+}
+
+div.MuiTextField-root {
+  border-color: $input_border-color2;
+}
+
+.MuiInputBase-input {
+  height: $height;
+  box-sizing: border-box;
+
+  &.Mui-disabled {
+    color: $text_color !important;
+    -webkit-text-fill-color: $text_color !important;
+  }
+}
+
+div.MuiAutocomplete-root .MuiAutocomplete-inputRoot {
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  padding: 0px 16px;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &.Mui-focused {
+    background-color: #ffffff;
+  }
+}
+
+.MuiAutocomplete-clearIndicator {
+  color: #80a2b6;
+}
+
+div.MuiAutocomplete-paper {
+  border: 1px solid $input_border-color2;
+  border-top-color: transparent;
+  border-radius: 5px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+
+  background-color: $input_background-color;
+  color: $text_color;
+  box-shadow: none;
+
+  &:hover,
+  &:hover div.MuiTextField-root {
+    background-color: #ffffff;
+  }
+}
+
+div.MuiAutocomplete-root .MuiAutocomplete-inputRoot.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: $input_border-color2;
+  border-width: 1px;
+}
+
+div.MuiAutocomplete-listbox {
+  padding: 0;
+}
+
+div.MuiAutocomplete-listbox .MuiAutocomplete-option.Mui-focused {
+  background-color: #eaf1f7;
+}
+
+.coin_name {
+  display: inline-block;
+  margin-left: 16px;
+  color: #80a2b6;
+}
+
+.keyboardArrowDownIcon {
+  display: inline-block;
+  margin-left: 30px;
+}
+
+.currency_bar-container {
+  position: relative;
+}
