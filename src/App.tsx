@@ -1,7 +1,6 @@
-import { useState } from 'react'
+import { SetStateAction, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { AxiosError, AxiosResponse } from 'axios'
-import { apiGet } from './config/axios/axiosUtils'
+import { fetchData } from './config/axios/axiosUtils'
 import { CssBaseline, Box, Container } from '@mui/material'
 import Header from './components/Header'
 import Exchange from './components/Exchange'
@@ -10,6 +9,7 @@ import SwapIcon from './components/SwapIcon'
 import { styled } from '@mui/material/styles'
 
 import { CurrencyOptionType, CurrencyType } from './components/CurrencyBar/types'
+import { DEPOSIT_TOO_SMALL, INACTIVE_PAIR } from './errorTypes'
 
 import './App.scss'
 
@@ -23,6 +23,8 @@ const MainBox = styled(Box)(({ theme }) => ({
     alignItems: 'center'
   }
 }))
+
+const ERROR_MESSAGE = 'This pair is disabled now'
 
 const App = () => {
   const [coin1, setCoin1] = useState<CurrencyType>({
@@ -41,92 +43,79 @@ const App = () => {
 
   const { data: currencies = [] } = useQuery({
     queryKey: ['currencies'],
-    queryFn: async () => {
-      try {
-        const response: AxiosResponse = await apiGet('/currencies')
-        const data = response.data as CurrencyOptionType[]
-
-        const btc = data.find((el) => el.ticker === 'btc')
-        const eth = data.find((el) => el.ticker === 'eth')
-
-        setCoin1((prev) => ({ ...prev, image: btc?.image || '' }))
-        setCoin2((prev) => ({ ...prev, image: eth?.image || '' }))
-
-        return data
-      } catch (error) {
-        console.error(error)
-      }
-    },
+    queryFn: () => fetchData('/currencies', handleCurrencies, console.error),
     staleTime: Infinity
   })
 
   const min_amount = useQuery({
     queryKey: ['min-amount', coin1.name, coin2.name],
-    queryFn: async () => {
-      setError('')
-      try {
-        const response: AxiosResponse = await apiGet(
-          `/min-amount/${coin1.name}_${coin2.name}?api_key=${import.meta.env.VITE_API_KEY}`
-        )
-        const data = response.data
-        setCoin1((prev) => ({ ...prev, amount: data.minAmount, minSum: data.minAmount }))
-        return data
-      } catch (error: AxiosError | unknown) {
-        if (error instanceof AxiosError) {
-          const response = error?.response?.data
-          if (response.error === 'pair_is_inactive') {
+    queryFn: () =>
+      fetchData(
+        `/min-amount/${coin1.name}_${coin2.name}?api_key=${import.meta.env.VITE_API_KEY}`,
+        handleMinAmount,
+        (error) => {
+          if (error === INACTIVE_PAIR) {
             setCoin1((prev) => ({ ...prev, minSum: null }))
             setCoin2((prev) => ({ ...prev, amount: '-' }))
-            setError('This pair is disabled now')
+            setError(ERROR_MESSAGE)
           }
+          return null
         }
-        return null
-      }
-    }
+      )
   })
 
   const exchange_amount = useQuery({
     queryKey: ['exchange-amount', coin2.name, coin1.amount],
-    queryFn: async () => {
+    queryFn: () => {
       const amount = isNaN(parseFloat(coin1.amount)) ? 0 : parseFloat(coin1.amount)
-      try {
-        const response: AxiosResponse = await apiGet(
-          `/exchange-amount/${amount}/${coin1.name}_${coin2.name}?api_key=${
-            import.meta.env.VITE_API_KEY
-          }`
-        )
-        const data = response.data
-        setCoin1((prev) => ({ ...prev, error: '' }))
-        setCoin2((prev) => ({ ...prev, amount: data.estimatedAmount }))
-        return data
-      } catch (error: AxiosError | unknown) {
-        if (error instanceof AxiosError) {
-          const response = error?.response?.data
-          if (response.error === 'deposit_too_small') {
+      return fetchData(
+        `/exchange-amount/${amount}/${coin1.name}_${coin2.name}?api_key=${
+          import.meta.env.VITE_API_KEY
+        }`,
+        handleExchangeAmount,
+        (error) => {
+          if (error === DEPOSIT_TOO_SMALL) {
             setCoin1((prev) => ({
               ...prev,
               error: `Deposit is too small. Minimal sum is ${coin1.minSum}`
             }))
-
             setCoin2((prev) => ({ ...prev, amount: '-' }))
           }
-
-          if (response.error === 'pair_is_inactive') {
-            setCoin2((prev) => ({ ...prev, amount: '-' }))
-            setError('This pair is disabled now')
-          }
+          return null
         }
-        return null
-      }
+      )
     },
     enabled: !!coin1.minSum
   })
+
+  const handleCurrencies = (data: any) => {
+    const btc = data.find((el: CurrencyOptionType) => el.ticker === 'btc')
+    const eth = data.find((el: CurrencyOptionType) => el.ticker === 'eth')
+    setCoin1((prev) => ({ ...prev, image: btc?.image || '' }))
+    setCoin2((prev) => ({ ...prev, image: eth?.image || '' }))
+  }
+
+  const handleMinAmount = (data: any) => {
+    setError('')
+    setCoin1((prev) => ({ ...prev, amount: data.minAmount, minSum: data.minAmount }))
+  }
+
+  const handleExchangeAmount = (data: any) => {
+    setCoin1((prev) => ({ ...prev, error: '' }))
+    setCoin2((prev) => ({ ...prev, amount: data.estimatedAmount }))
+  }
 
   const swapCurrencies = () => {
     if (coin1.name === coin2.name) return
     setCoin1({ name: coin2.name, amount: '', image: coin2.image, error: '', minSum: null })
     setCoin2({ name: coin1.name, amount: '', image: coin1.image })
   }
+
+  const handleCurrencyChange =
+    (setter: { (value: SetStateAction<CurrencyType>): void }) =>
+    (value: Record<string, string | number | null>) => {
+      setter((prev) => ({ ...prev, ...value }))
+    }
 
   return (
     <Container component="main" maxWidth="xl">
@@ -137,9 +126,7 @@ const App = () => {
           {...{
             currencies,
             currency: coin1,
-            getValue: (value) => {
-              setCoin1((prev) => ({ ...prev, ...value }))
-            }
+            getValue: handleCurrencyChange(setCoin1)
           }}
         />
         <Box className="swap_icon-container" onClick={swapCurrencies}>
@@ -149,9 +136,7 @@ const App = () => {
           {...{
             currencies,
             currency: coin2,
-            getValue: (value) => {
-              setCoin2((prev) => ({ ...prev, ...value }))
-            },
+            getValue: handleCurrencyChange(setCoin2),
             disabled: true
           }}
         />
