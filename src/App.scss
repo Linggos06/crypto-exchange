@@ -49,3 +49,12 @@ div.MuiTextField-root {
   font-size: 12px;
   color: #e03f3f;
 }
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+// for Firefox
+.thin_scroll {
+  scrollbar-width: none; // auto | thin | none | <length>;
+}
