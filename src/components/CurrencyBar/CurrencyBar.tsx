@@ -1,5 +1,4 @@
-import { SyntheticEvent, useState } from 'react'
-
+import { ChangeEvent, SyntheticEvent, useState } from 'react'
 import { Stack, Button, InputBase, Autocomplete, TextField, Box, Typography } from '@mui/material'
 import ListBoxComponent from '../ListBoxComponent'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -16,13 +15,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   width: 'inherit',
   color: '#F6F7F8',
   '& .MuiInputBase-input': {
-    height: '50px',
     boxSizing: 'border-box',
     width: 'inherit',
+    height: '50px',
     padding: '14px 16px',
-    border: '1px solid #E3EBEF',
     color: '#282828',
     backgroundColor: '#F6F7F8',
+    border: '1px solid #E3EBEF',
     borderRight: 'none',
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
@@ -38,10 +37,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   minWidth: 150,
   width: '100%',
   fontSize: 16,
-  paddingTop: 14,
-  paddingBottom: 13,
-  paddingRight: 0,
-  paddingLeft: 0,
+  padding: '14px 0px 13px',
   color: '#282828',
   backgroundColor: '#F6F7F8',
   border: '1px solid #E3EBEF',
@@ -80,7 +76,7 @@ const CurrencyBar = ({ currencies, currency, getValue, disabled = false }: Curre
     setOpen(false)
   }
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     getValue({ amount: value })
   }
@@ -127,16 +123,9 @@ const CurrencyBar = ({ currencies, currency, getValue, disabled = false }: Curre
               getOptionDisabled={(option) => option.ticker === `No options`}
               filterOptions={filterOptions}
               options={currencies}
-              getOptionLabel={(option) => {
-                if (typeof option === 'string') {
-                  return option
-                }
-                if (option.inputValue) {
-                  return option.inputValue
-                }
-
-                return option.ticker
-              }}
+              getOptionLabel={(option) =>
+                typeof option === 'string' ? option : option.inputValue || option.ticker
+              }
               clearIcon={<ClearIcon fontSize="small" sx={{ color: '#80A2B6' }} />}
               onChange={handleCoinSelect}
               renderInput={(params) => (
