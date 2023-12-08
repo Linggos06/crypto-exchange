@@ -79,8 +79,8 @@ div.MuiTextField-root {
 }
 
 .MuiInputBase-input {
-  height: $height;
-  box-sizing: border-box;
+  height: $height !important;
+  box-sizing: border-box !important;
 
   &.Mui-disabled {
     color: $text_color !important;
